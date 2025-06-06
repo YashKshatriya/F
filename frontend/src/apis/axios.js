@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "https://backend-3mlayx4k3-yash-s-projects-13e9157c.vercel.app",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Phone, User, Lock, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../apis/axios';
 import Toast from './Toast';
 import config from '../config';
 
@@ -102,7 +102,7 @@ export default function RegisterForm() {
       
       console.log('Sending registration request with data:', registrationData);
 
-      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/auth/register`, registrationData);
+      const response = await axiosInstance.post('/api/auth/register', registrationData);
 
       console.log('Registration response:', response.data);
 

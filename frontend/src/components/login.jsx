@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Phone, Lock, ArrowRight } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../apis/axios';
 import Toast from './Toast';
 import config from '../config';
 
@@ -87,7 +87,7 @@ export default function LoginForm() {
     try {
       console.log('Sending login request with data:', formData);
 
-      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/auth/login`, formData);
+      const response = await axiosInstance.post('/api/auth/login', formData);
 
       console.log('Login response:', response.data);
 

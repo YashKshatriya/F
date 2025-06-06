@@ -17,7 +17,9 @@ app.use(cookieParser());
 
 // CORS configuration
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: process.env.NODE_ENV === 'production' 
+        ? ['https://your-frontend-domain.vercel.app', 'http://localhost:5173']
+        : 'http://localhost:5173',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -31,7 +33,10 @@ app.use('/api/auth', authRoutes);
 // MongoDB Connection
 const connectDb = async () => {
     try {
-        const mongoURI = "mongodb+srv://yashmine926:yash@cluster0.yc3uxqt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+        const mongoURI = process.env.MONGODB_URI;
+        if (!mongoURI) {
+            throw new Error('MONGODB_URI is not defined in environment variables');
+        }
         await mongoose.connect(mongoURI);
         console.log('Connected to MongoDB');
     } catch (error) {
@@ -69,4 +74,10 @@ const startServer = async () => {
     }
 };
 
-startServer();
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+    startServer();
+}
+
+// Export the Express API for Vercel
+module.exports = app;
