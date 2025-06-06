@@ -28,7 +28,7 @@ app.use("/api/auth", authRoute);
 
 // MongoDB connection
 mongoose
-  .connect(process.env.MONGODB_URI || "mongodb+srv://yashkshatriya:yashkshatriya@cluster0.3mlayx4.mongodb.net/radhee?retryWrites=true&w=majority")
+  .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("Connected to MongoDB");
   })
