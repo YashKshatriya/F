@@ -21,7 +21,7 @@
     },
     {
       "src": "/api/(.*)",
-      "dest": "https://f-pqkn.vercel.app/api/$1"
+      "dest": "https://f-pqkn-yash-s-projects-13e9157c.vercel.app/api/$1"
     },
     {
       "handle": "filesystem"
