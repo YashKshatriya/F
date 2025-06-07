@@ -1,37 +1,42 @@
 // src/api/axios.js
 import axios from "axios";
 
-const instance = axios.create({
-  baseURL: 'https://f-pqkn-yash-s-projects-13e9157c.vercel.app/api',
+const baseURL = "https://f-iota-pink.vercel.app";
+
+const axiosInstance = axios.create({
+  baseURL,
   withCredentials: true,
+  timeout: 5000, // 5 seconds timeout
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
+    "Content-Type": "application/json",
+  },
 });
 
-// Add request interceptor for debugging
-instance.interceptors.request.use(
+// Request interceptor
+axiosInstance.interceptors.request.use(
   (config) => {
-    console.log('Request:', config);
     return config;
   },
   (error) => {
-    console.error('Request Error:', error);
     return Promise.reject(error);
   }
 );
 
-// Add response interceptor for debugging
-instance.interceptors.response.use(
+// Response interceptor
+axiosInstance.interceptors.response.use(
   (response) => {
-    console.log('Response:', response);
     return response;
   },
   (error) => {
-    console.error('Response Error:', error);
+    if (error.code === "ECONNABORTED") {
+      // Retry once with longer timeout
+      return axiosInstance({
+        ...error.config,
+        timeout: 10000, // 10 seconds for retry
+      });
+    }
     return Promise.reject(error);
   }
 );
 
-export default instance;
+export default axiosInstance;
