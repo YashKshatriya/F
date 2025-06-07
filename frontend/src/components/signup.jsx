@@ -96,17 +96,10 @@ export default function RegisterForm() {
     setIsSubmitting(true);
 
     try {
-      // Remove confirmPassword before sending to API
-      const { confirmPassword, ...registrationData } = formData;
-      
-      console.log('Sending registration request with data:', registrationData);
-      console.log('API URL:', import.meta.env.VITE_API_URL);
-
       const response = await axiosInstance.post('/auth/register', {
         name: formData.name,
-        phone: formData.phone,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword
+        phoneNumber: formData.phone,
+        password: formData.password
       });
 
       console.log('Registration response:', response.data);
@@ -303,51 +296,38 @@ export default function RegisterForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full py-2 px-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl shadow-lg shadow-orange-500/30 transition-all duration-300 flex items-center justify-center gap-2 text-sm ${
+              className={`w-full py-2 px-4 rounded-xl text-white font-medium transition-all duration-300 ${
                 isSubmitting
-                  ? 'opacity-80 cursor-not-allowed'
-                  : 'hover:shadow-xl hover:shadow-orange-500/40 hover:scale-[1.02] active:scale-[0.98]'
+                  ? 'bg-orange-400 cursor-not-allowed'
+                  : 'bg-orange-600 hover:bg-orange-700 hover:shadow-lg hover:shadow-orange-500/20'
               }`}
             >
               {isSubmitting ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Creating Account...
-                </>
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Creating account...
+                </span>
               ) : (
-                <>
+                <span className="flex items-center justify-center">
                   Create Account
-                  <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
-                </>
+                  <ArrowRight className="ml-2" size={16} />
+                </span>
               )}
             </button>
-          </form>
 
-          {/* Footer */}
-          <div className="text-center mt-4">
-            <p className="text-gray-600 text-sm">
+            {/* Login link */}
+            <p className="text-center text-sm text-gray-600">
               Already have an account?{' '}
-              <Link to="/login" className="text-orange-600 hover:text-orange-800 font-semibold transition-colors duration-200">
+              <Link to="/login" className="text-orange-600 hover:text-orange-800 font-medium transition-colors duration-200">
                 Sign in
               </Link>
             </p>
-          </div>
+          </form>
         </div>
-
-        {/* Floating elements */}
-        <div className="absolute -top-4 -left-4 w-6 h-6 bg-gradient-to-br from-orange-400 to-orange-500 rounded-xl opacity-60 animate-float"></div>
-        <div className="absolute -bottom-4 -right-4 w-5 h-5 bg-gradient-to-br from-orange-400 to-orange-500 rounded-lg opacity-60 animate-float delay-500"></div>
       </div>
-
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-10px) rotate(5deg); }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 }
