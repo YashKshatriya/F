@@ -86,8 +86,12 @@ export default function LoginForm() {
 
     try {
       console.log('Sending login request with data:', formData);
+      console.log('API URL:', config.API_URL);
 
-      const response = await axiosInstance.post('/api/auth/login', formData);
+      const response = await axiosInstance.post('/auth/login', {
+        phone: formData.phone,
+        password: formData.password
+      });
 
       console.log('Login response:', response.data);
 
@@ -95,7 +99,11 @@ export default function LoginForm() {
         // Store token in localStorage
         localStorage.setItem('token', response.data.token);
         // Store user data
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('user', JSON.stringify({
+          _id: response.data._id,
+          name: response.data.name,
+          phone: response.data.phone
+        }));
         
         // Show success toast
         showToast('Login successful! Redirecting...', 'success');
@@ -112,10 +120,15 @@ export default function LoginForm() {
       
       if (err.response) {
         // Server responded with an error
-        errorMessage = err.response.data.error || 'Login failed. Please try again.';
+        console.error('Server error response:', err.response.data);
+        errorMessage = err.response.data.message || 'Login failed. Please try again.';
       } else if (err.request) {
         // Request was made but no response
+        console.error('No response received:', err.request);
         errorMessage = 'Unable to reach the server. Please check your internet connection.';
+      } else {
+        // Something else went wrong
+        console.error('Error setting up request:', err.message);
       }
       
       setError(errorMessage);

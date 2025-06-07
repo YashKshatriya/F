@@ -101,12 +101,18 @@ export default function RegisterForm() {
       const { confirmPassword, ...registrationData } = formData;
       
       console.log('Sending registration request with data:', registrationData);
+      console.log('API URL:', config.API_URL);
 
-      const response = await axiosInstance.post('/api/auth/register', registrationData);
+      const response = await axiosInstance.post('/auth/register', {
+        name: formData.name,
+        phone: formData.phone,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword
+      });
 
       console.log('Registration response:', response.data);
 
-      if (response.data.message === 'User registered successfully') {
+      if (response.data) {
         // Show success toast
         showToast('Registration successful! Please login to continue...', 'success');
         
@@ -122,10 +128,15 @@ export default function RegisterForm() {
       
       if (err.response) {
         // Server responded with an error
-        errorMessage = err.response.data.error || 'Registration failed. Please try again.';
+        console.error('Server error response:', err.response.data);
+        errorMessage = err.response.data.message || 'Registration failed. Please try again.';
       } else if (err.request) {
         // Request was made but no response
+        console.error('No response received:', err.request);
         errorMessage = 'Unable to reach the server. Please check your internet connection.';
+      } else {
+        // Something else went wrong
+        console.error('Error setting up request:', err.message);
       }
       
       setError(errorMessage);
