@@ -96,7 +96,7 @@ export default function Home() {
                 <Phone className="text-orange-600" size={18} />
                 <div>
                   <p className="text-sm text-gray-500">Phone Number</p>
-                  <p className="font-medium text-gray-800">{user.phone}</p>
+                  <p className="font-medium text-gray-800">{user.phoneNumber}</p>
                 </div>
               </div>
             </div>

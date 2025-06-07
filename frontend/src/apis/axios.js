@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/api`,
+  baseURL: 'https://f-pqkn-yash-s-projects-13e9157c.vercel.app/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

@@ -87,7 +87,7 @@ export default function LoginForm() {
       console.log('Sending login request with data:', formData);
       console.log('API URL:', import.meta.env.VITE_API_URL);
 
-      const response = await axiosInstance.post('/auth/login', {
+      const response = await axiosInstance.post('/login', {
         phoneNumber: formData.phone,
         password: formData.password
       });

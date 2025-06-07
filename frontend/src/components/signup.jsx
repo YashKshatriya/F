@@ -96,7 +96,7 @@ export default function RegisterForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await axiosInstance.post('/auth/register', {
+      const response = await axiosInstance.post('/register', {
         name: formData.name,
         phoneNumber: formData.phone,
         password: formData.password
