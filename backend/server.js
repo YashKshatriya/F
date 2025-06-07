@@ -11,21 +11,53 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// CORS configuration - Allow all origins for now to test
+// CORS configuration
+const allowedOrigins = [
+  'https://f-iota-pink.vercel.app',
+  'https://f-pqkn-yash-s-projects-13e9157c.vercel.app',
+  'http://localhost:5173'
+];
+
 app.use(cors({
-  origin: true, // Allow all origins
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400 // 24 hours
 }));
 
 // Root route handler
 app.get("/", (req, res) => {
-  res.send("Welcome to the Fiber API");
+  res.json({ message: "Welcome to the Fiber API" });
 });
 
 // API Routes
 app.use("/api", authRoute);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({
+    message: 'Internal server error',
+    error: err.message
+  });
+});
+
+// Handle 404 errors
+app.use((req, res) => {
+  res.status(404).json({
+    message: 'Route not found',
+    path: req.path
+  });
+});
 
 // MongoDB connection
 mongoose
@@ -34,7 +66,8 @@ mongoose
     console.log("Connected to MongoDB");
   })
   .catch((err) => {
-    console.log("Error connecting to MongoDB:", err);
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
   });
 
 // Start server
