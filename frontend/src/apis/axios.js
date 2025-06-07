@@ -5,20 +5,13 @@ const instance = axios.create({
   baseURL: 'https://f-pqkn-yash-s-projects-13e9157c.vercel.app/api',
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    'Content-Type': 'application/json'
   }
-  // No timeout set
 });
 
 // Add request interceptor for debugging
 instance.interceptors.request.use(
   (config) => {
-    // Add timestamp to prevent caching
-    config.params = {
-      ...config.params,
-      _t: new Date().getTime()
-    };
     console.log('Request:', config);
     return config;
   },
