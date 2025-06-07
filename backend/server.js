@@ -11,44 +11,63 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ CORS Fix: Allow frontend only and support cookies
-const FRONTEND_ORIGIN = "https://f-pqkn-yash-s-projects-13e9157c.vercel.app";
+// CORS configuration
+const allowedOrigins = [
+  'https://f-iota-pink.vercel.app', // Your frontend on Vercel
+  'http://localhost:5173'           // Local frontend dev (optional)
+];
 
 app.use(cors({
-  origin: FRONTEND_ORIGIN,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (e.g., mobile apps, curl, Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed for this origin: ' + origin));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  maxAge: 60 // reduce preflight timeout to 1 min
+  maxAge: 86400 // 24 hours
 }));
 
-// Root test route
+// Root route handler
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the API" });
 });
 
-// Routes
+// API Routes
 app.use("/api", authRoute);
 
-// DB connection
+// MongoDB connection
 console.log('MongoDB URI:', process.env.MONGODB_URI);
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log("✅ MongoDB connected"))
+console.log('Attempting to connect to MongoDB...');
+
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("✅ Successfully connected to MongoDB"))
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err);
     process.exit(1);
   });
 
-// Error handler
+// Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('Unhandled Error:', err);
-  res.status(500).json({ message: 'Internal server error', error: err.message });
+  console.error('Internal Error:', err);
+  res.status(500).json({
+    message: 'Internal server error',
+    error: err.message
+  });
 });
 
-// 404 handler
+// Handle 404 errors
 app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found', path: req.path });
+  res.status(404).json({
+    message: 'Route not found',
+    path: req.path
+  });
 });
 
 // Start server
