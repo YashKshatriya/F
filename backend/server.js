@@ -13,7 +13,7 @@ app.use(cookieParser());
 
 // CORS configuration
 app.use(cors({
-  origin: '*', // Allow all origins
+  origin: 'https://f-pqkn-yash-s-projects-13e9157c.vercel.app', // your frontend domain
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
