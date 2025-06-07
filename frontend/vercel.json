@@ -16,6 +16,10 @@
       "dest": "/assets/$1"
     },
     {
+      "src": "/logo.jpg",
+      "dest": "/logo.jpg"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }

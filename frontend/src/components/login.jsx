@@ -163,9 +163,9 @@ export default function LoginForm() {
             {/* Logo */}
             <div className="flex flex-col items-center mb-4">
               <img
+                className="mx-auto h-12 w-auto"
                 src="/logo.jpg"
                 alt="Radhe Fiber Logo"
-                className="h-20 w-20 object-contain mb-3"
               />
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#1a1a1a] mb-2">
                 <Lock className="text-white" size={14} />
