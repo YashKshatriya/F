@@ -8,7 +8,7 @@ const instance = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   },
-  timeout: 10000 
+  timeout: 3000 
 });
 
 // Add request interceptor for debugging
