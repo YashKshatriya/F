@@ -16,7 +16,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://f-backend.vercel.app',
+        target: 'https://f-pqkn.vercel.app',
         changeOrigin: true,
         secure: true,
       }

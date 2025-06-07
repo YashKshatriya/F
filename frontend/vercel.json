@@ -21,7 +21,7 @@
     },
     {
       "src": "/api/(.*)",
-      "dest": "https://f-backend.vercel.app/api/$1"
+      "dest": "https://f-pqkn.vercel.app/api/$1"
     },
     {
       "handle": "filesystem"
