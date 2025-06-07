@@ -13,9 +13,7 @@ app.use(cookieParser());
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://f-woad.vercel.app', 'http://localhost:5173']
-    : 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'http://localhost:8000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -23,7 +21,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Routes
+// Root route handler
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to the API" });
+});
+
+// API Routes
 app.use("/api/auth", authRoute);
 
 // MongoDB connection
@@ -32,9 +35,7 @@ console.log('Attempting to connect to MongoDB...');
 
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log("Successfully connected to MongoDB");
-  })
+  .then(() => console.log("Successfully connected to MongoDB"))
   .catch((err) => {
     console.error("MongoDB connection error:", err);
     process.exit(1);

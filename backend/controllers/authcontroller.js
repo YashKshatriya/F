@@ -1,29 +1,27 @@
-const User = require("../model/authmodel");
-const bcrypt = require("bcryptjs");
+const User = require("../models/authmodel");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
-// Register user
+// Generate JWT Token
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
+};
+
+// Register User
 const register = async (req, res) => {
   try {
-    console.log('Registration request received:', req.body);
-    const { name, phone, password, confirmPassword } = req.body;
+    const { name, phoneNumber, password } = req.body;
 
-    // Validate input
-    if (!name || !phone || !password || !confirmPassword) {
-      console.log('Missing required fields:', { name, phone, password: !!password, confirmPassword: !!confirmPassword });
+    // Validation
+    if (!name || !phoneNumber || !password) {
       return res.status(400).json({ message: "Please fill all fields" });
     }
 
-    // Check if passwords match
-    if (password !== confirmPassword) {
-      console.log('Passwords do not match');
-      return res.status(400).json({ message: "Passwords do not match" });
-    }
-
     // Check if user exists
-    const userExists = await User.findOne({ phone });
+    const userExists = await User.findOne({ phoneNumber });
     if (userExists) {
-      console.log('User already exists with phone:', phone);
       return res.status(400).json({ message: "User already exists" });
     }
 
@@ -32,77 +30,61 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create user
-    console.log('Creating new user with data:', { name, phone });
     const user = await User.create({
       name,
-      phone,
+      phoneNumber,
       password: hashedPassword,
     });
 
     if (user) {
-      console.log('User created successfully:', user._id);
       res.status(201).json({
         _id: user._id,
         name: user.name,
-        phone: user.phone,
+        phoneNumber: user.phoneNumber,
         token: generateToken(user._id),
       });
-    } else {
-      console.log('Failed to create user');
-      res.status(400).json({ message: "Invalid user data" });
     }
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ 
-      message: "Registration failed", 
-      error: error.message 
-    });
+    console.error("Registration error:", error);
+    res.status(500).json({ message: "Error in registration", error: error.message });
   }
 };
 
-// Login user
+// Login User
 const login = async (req, res) => {
   try {
-    console.log('Login request received:', req.body);
-    const { phone, password } = req.body;
+    const { phoneNumber, password } = req.body;
 
-    // Validate input
-    if (!phone || !password) {
-      console.log('Missing required fields:', { phone: !!phone, password: !!password });
-      return res.status(400).json({ message: "Please provide phone and password" });
+    // Validation
+    if (!phoneNumber || !password) {
+      return res.status(400).json({ message: "Please fill all fields" });
     }
 
-    // Check for user phone
-    const user = await User.findOne({ phone });
+    // Check for user
+    const user = await User.findOne({ phoneNumber });
     if (!user) {
-      console.log('User not found with phone:', phone);
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log('Invalid password for user:', phone);
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    console.log('Login successful for user:', user._id);
     res.json({
       _id: user._id,
       name: user.name,
-      phone: user.phone,
+      phoneNumber: user.phoneNumber,
       token: generateToken(user._id),
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ 
-      message: "Login failed", 
-      error: error.message 
-    });
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Error in login", error: error.message });
   }
 };
 
-// Logout user
+// Logout User
 const logout = (req, res) => {
   res.cookie("jwt", "", {
     httpOnly: true,
@@ -111,29 +93,18 @@ const logout = (req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
 };
 
-// Get user profile
+// Get User Profile
 const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
-    if (user) {
-      res.json({
-        _id: user._id,
-        name: user.name,
-        phone: user.phone,
-      });
-    } else {
-      res.status(404).json({ message: "User not found" });
+    const user = await User.findById(req.user._id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+    res.json(user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Profile error:", error);
+    res.status(500).json({ message: "Error fetching profile", error: error.message });
   }
-};
-
-// Generate JWT
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || "your-secret-key", {
-    expiresIn: "30d",
-  });
 };
 
 module.exports = {
