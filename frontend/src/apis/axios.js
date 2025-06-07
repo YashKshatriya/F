@@ -8,7 +8,7 @@ const instance = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   },
-  timeout: 3000 
+  timeout: 10000 // 10 seconds timeout for PC
 });
 
 // Add request interceptor for debugging
@@ -34,23 +34,8 @@ instance.interceptors.response.use(
     console.log('Response:', response);
     return response;
   },
-  async (error) => {
+  (error) => {
     console.error('Response Error:', error);
-    
-    // Handle timeout errors
-    if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
-      console.error('Request timed out. Retrying...');
-      // Retry the request once
-      try {
-        const config = error.config;
-        config.timeout = 45000; // Increase timeout for retry
-        return await instance(config);
-      } catch (retryError) {
-        console.error('Retry failed:', retryError);
-        return Promise.reject(retryError);
-      }
-    }
-
     if (error.response) {
       // The request was made and the server responded with a status code
       // that falls out of the range of 2xx
