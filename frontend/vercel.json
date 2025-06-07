@@ -20,6 +20,13 @@
       "dest": "/logo.jpg"
     },
     {
+      "src": "/api/(.*)",
+      "dest": "https://f-backend.vercel.app/api/$1"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
