@@ -13,10 +13,12 @@ app.use(cookieParser());
 
 // CORS configuration
 app.use(cors({
-  origin: true, // Allow all origins
+  origin: '*', // Allow all origins
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400 // 24 hours
 }));
 
 // Root route handler
@@ -25,7 +27,7 @@ app.get("/", (req, res) => {
 });
 
 // API Routes
-app.use("/api/auth", authRoute);
+app.use("/api", authRoute);
 
 // MongoDB connection
 console.log('MongoDB URI:', process.env.MONGODB_URI);
@@ -45,6 +47,14 @@ app.use((err, req, res, next) => {
   res.status(500).json({
     message: 'Internal server error',
     error: err.message
+  });
+});
+
+// Handle 404 errors
+app.use((req, res) => {
+  res.status(404).json({
+    message: 'Route not found',
+    path: req.path
   });
 });
 
