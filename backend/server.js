@@ -13,31 +13,32 @@ app.use(cookieParser());
 
 // CORS configuration
 app.use(cors({
-  origin: ['https://f-iota-pink.vercel.app', 'http://localhost:5173'],
+  origin: '*', // Allow all origins
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400 // 24 hours
 }));
 
 // Root route handler
 app.get("/", (req, res) => {
-  res.send("Welcome to the Fiber API");
+  res.json({ message: "Welcome to the API" });
 });
 
 // API Routes
 app.use("/api", authRoute);
 
 // MongoDB connection
-console.log('MongoDB URI:', process.env.MONGO_URL);
+console.log('MongoDB URI:', process.env.MONGODB_URI);
 console.log('Attempting to connect to MongoDB...');
 
 mongoose
-  .connect(process.env.MONGO_URL)
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("Successfully connected to MongoDB"))
   .catch((err) => {
-    console.log("Error connecting to MongoDB:", err);
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
   });
 
 // Error handling middleware
@@ -46,6 +47,14 @@ app.use((err, req, res, next) => {
   res.status(500).json({
     message: 'Internal server error',
     error: err.message
+  });
+});
+
+// Handle 404 errors
+app.use((req, res) => {
+  res.status(404).json({
+    message: 'Route not found',
+    path: req.path
   });
 });
 
