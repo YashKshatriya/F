@@ -3,7 +3,6 @@ import { Eye, EyeOff, Phone, Lock, ArrowRight } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from '../apis/axios';
 import Toast from './Toast';
-import config from '../config';
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -86,7 +85,7 @@ export default function LoginForm() {
 
     try {
       console.log('Sending login request with data:', formData);
-      console.log('API URL:', config.API_URL);
+      console.log('API URL:', import.meta.env.VITE_API_URL);
 
       const response = await axiosInstance.post('/auth/login', {
         phone: formData.phone,

@@ -3,7 +3,6 @@ import { Eye, EyeOff, Phone, User, Lock, ArrowRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../apis/axios';
 import Toast from './Toast';
-import config from '../config';
 
 export default function RegisterForm() {
   const navigate = useNavigate();
@@ -101,7 +100,7 @@ export default function RegisterForm() {
       const { confirmPassword, ...registrationData } = formData;
       
       console.log('Sending registration request with data:', registrationData);
-      console.log('API URL:', config.API_URL);
+      console.log('API URL:', import.meta.env.VITE_API_URL);
 
       const response = await axiosInstance.post('/auth/register', {
         name: formData.name,
